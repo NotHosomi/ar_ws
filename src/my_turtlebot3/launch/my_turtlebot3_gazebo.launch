@@ -1,0 +1,31 @@
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [waffle, waffle_pi]"/>
+  <arg name="gui" default="true"/>
+  <arg name="paused" default="true"/>
+  <arg name="use_sim_time" default="true"/>
+
+  <arg name="x_pos" default="-3.0"/>
+  <arg name="y_pos" default="1.0"/>
+  <arg name="z_pos" default="0.0"/>
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_house.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- send robot urdf to param server -->
+  <include file="$(find my_turtlebot3_description)/launch/my_turtlebot3_no_arm.launch">
+    <arg name="model" value="$(arg model)"/>
+  </include>
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+  args="-urdf -param robot_description -model robot -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos)"/>
+
+</launch>
+

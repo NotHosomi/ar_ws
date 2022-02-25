@@ -1,0 +1,5 @@
+<launch>
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [waffle, waffle_pi]"/>
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find my_turtlebot3_description)/robots/my_turtlebot3_no_arm.urdf.xacro'"/>
+</launch>

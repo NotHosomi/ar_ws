@@ -1,0 +1,17 @@
+<launch>
+  <!-- startup simulated world -->
+  <include file="$(find my_turtlebot3)/launch/my_turtlebot3_gazebo.launch">
+    <arg name="x_pos" value="-3.0"/>
+    <arg name="y_pos" value="1.0"/>
+    <arg name="z_pos" value="0.0"/>
+  </include>
+
+  <!-- startup navigation -->
+  <include file="$(find my_turtlebot3)/launch/my_turtlebot3_navigation.launch">
+    <arg name="map_file" value="$(env HOME)/map/map.yaml"/>
+  </include>
+  
+  <!-- Start control node -->
+  <node pkg="sim" type="sim_nav_goals.py" name="sim_nav_goals" output="screen" respawn="true" />
+
+</launch>

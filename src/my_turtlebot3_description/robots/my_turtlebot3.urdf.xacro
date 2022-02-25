@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="my_turtlebot3">
+
+<xacro:include filename="$(find turtlebot3_manipulation_description)/urdf/turtlebot3_manipulation_robot.urdf.xacro" />
+
+
+</robot>
+
