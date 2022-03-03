@@ -42,11 +42,9 @@ class sim_nav_goals():
             msg.pose.orientation.w = 1
             if self.signal == False:
                 if self.counter % 2 == 0:
-                    # First pose
                     msg.pose.position.x = 0.0
                     msg.pose.position.y = 0.5
                 else:
-                # Second pose
                     msg.pose.position.x = -1.0
                     msg.pose.position.y = 1.0
 
