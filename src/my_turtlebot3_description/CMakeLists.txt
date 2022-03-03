@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS roscpp rviz urdf std_msgs)
 set(CMAKE_BUILD_TYPE Release)
 
 catkin_package(
-    INCLUDE_DIRS meshes robots urdf
+    # INCLUDE_DIRS meshes robots urdf
     CATKIN_DEPENDS roscpp std_msgs 
 )
 
