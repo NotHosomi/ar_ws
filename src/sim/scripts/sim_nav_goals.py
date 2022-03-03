@@ -20,14 +20,12 @@ class sim_nav_goals():
     
     def callback(self, data):
         self.signal = data
-<<<<<<< HEAD
-=======
 
     def callback_ron_response(self, data):
         rospy.loginfo(rospy.get_caller_id() + "Ron responded with:  %s", data.data)
 
    
->>>>>>> 424fae0cf63f4ffadf41ab8b177ed567d95d7f16
+
     
     def __init__(self):
         self.signal = False
