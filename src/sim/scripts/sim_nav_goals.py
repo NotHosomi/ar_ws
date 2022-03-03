@@ -3,6 +3,7 @@ import rospy
 import math
 import copy
 from std_msgs.msg import Bool
+from std_msgs.msg import String 
 
 from geometry_msgs.msg import PoseStamped
 
@@ -19,13 +20,25 @@ class sim_nav_goals():
     
     def callback(self, data):
         self.signal = data
+<<<<<<< HEAD
+=======
+
+    def callback_ron_response(self, data):
+        rospy.loginfo(rospy.get_caller_id() + "Ron responded with:  %s", data.data)
+
+   
+>>>>>>> 424fae0cf63f4ffadf41ab8b177ed567d95d7f16
     
     def __init__(self):
         self.signal = False
         rospy.init_node('sim_nav_goals', anonymous=True)
 
         self.counter = 0
+
         rospy.Subscriber("interrupt_pub",Bool, self.callback)
+        rospy.Subscriber("ron_response", String, self.callback_ron_response)
+
+
         client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
         client.wait_for_server()
 
