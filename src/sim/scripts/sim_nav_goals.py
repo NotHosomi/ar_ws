@@ -13,12 +13,12 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 
 
+
 class sim_nav_goals():
 
     
     def callback(self, data):
         self.signal = data
-   
     
     def __init__(self):
         self.signal = False
@@ -42,17 +42,17 @@ class sim_nav_goals():
             msg.pose.orientation.w = 1
             if self.signal == False:
                 if self.counter % 2 == 0:
-                    msg.pose.position.x = 0.0
-                    msg.pose.position.y = 0.5
+                    msg.pose.position.x = 2
+                    msg.pose.position.y = 2
                 else:
-                    msg.pose.position.x = -1.0
-                    msg.pose.position.y = 1.0
+                    msg.pose.position.x = 2.1
+                    msg.pose.position.y = 2.1
 
             elif self.signal == True:
             
                 print("changing")
-                msg.pose.position.x = 1.0
-                msg.pose.position.y = -6.5
+                msg.pose.position.x = -3
+                msg.pose.position.y = -3
 
 
 
