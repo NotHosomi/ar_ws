@@ -42,11 +42,11 @@ class sim_nav_goals():
             # GOTO waypoint i
             #msg.pose.position.x = self.waypoints[i][0]
             #msg.pose.position.y = self.waypoints[i][1]
-            if self.counter  > len(waypoints):
+            if self.counter  > len(self.waypoints):
                 msg.pose.position.x = self.waypoints[self.counter][0]
                 msg.pose.position.y = self.waypoints[self.counter][0]
             else:
-                # Reached end of path
+                rospy.logdebug("Reached end of path!")
 
                         
             msg.header.stamp = rospy.Time.now()
