@@ -11,7 +11,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 class sim_nav_goals():
 
-    waypoints = [[1,2], [3.5,4.3]] #etc etc (last should be [0,0])
+    waypoints = [[1,2], [3.5,4.3], [0,0]] #etc etc (last should be [0,0])
 
     def __init__(self):
         rospy.init_node('sim_nav_goals', anonymous=True)
@@ -47,6 +47,7 @@ class sim_nav_goals():
                 msg.pose.position.y = self.waypoints[self.counter][0]
             else:
                 rospy.logdebug("Reached end of path!")
+                #Send alert to family (Ron is missing)
 
                         
             msg.header.stamp = rospy.Time.now()
@@ -55,7 +56,8 @@ class sim_nav_goals():
             goal.target_pose.header.stamp = rospy.Time.now()
             goal.target_pose = msg
             client.send_goal(goal)
-            wait = client.wait_for_result() # This line blocks until the goal is reached, so interupt may be more difficult
+            wait = client.wait_for_result() # This line blocks until the goal is reached, so interupt may be more difficult.
+            #Need to find a way to break out of the loop early
     
             if not wait:
                 rospy.logerr("Action server is not available.")
@@ -65,6 +67,7 @@ class sim_nav_goals():
                 x = client.get_result()
                 
             rate.sleep()
+        #end
 
 if __name__ == '__main__':
     try:
