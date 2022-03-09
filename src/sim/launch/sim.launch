@@ -8,7 +8,7 @@
 
   <!-- startup navigation -->
   <include file="$(find my_turtlebot3)/launch/my_turtlebot3_navigation.launch">
-    <arg name="map_file" value="/home/harvey/ar_ws/map.yaml"/>
+    <arg name="map_file" value="$(env HOME)/ar_ws/map.yaml"/>
   </include>
   
   <!-- Start control node -->
