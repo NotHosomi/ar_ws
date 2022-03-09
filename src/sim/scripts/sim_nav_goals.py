@@ -11,7 +11,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 class sim_nav_goals():
 
-    waypoints = [[1,2], [3.5,4.3], [0,0]] #etc etc (last should be [0,0])
+    waypoints = [[4,4], [3,3], [0,0]] #etc etc (last should be [0,0])
 
     
     
@@ -22,7 +22,7 @@ class sim_nav_goals():
 
         
     def __init__(self):
-        
+        self.seen = False
         rospy.init_node('sim_nav_goals', anonymous=True)
 
         self.counter = 0
@@ -42,12 +42,13 @@ class sim_nav_goals():
             msg = PoseStamped()
             msg.header.frame_id = 'map'
             msg.pose.position.z = 0
-            if self.counter  > len(self.waypoints):
+            msg.pose.orientation.w = 1
+            if self.counter  < len(self.waypoints):
                 msg.pose.position.x = self.waypoints[self.counter][0]
-                msg.pose.position.y = self.waypoints[self.counter][0]
+                msg.pose.position.y = self.waypoints[self.counter][1]
             else:
                 rospy.logdebug("Reached end of path!")
-            if self.seen.data == True:
+            if self.seen == True:
                 print("ron is seen")
                 print(self.seen)
             msg.header.stamp = rospy.Time.now()
@@ -56,9 +57,10 @@ class sim_nav_goals():
             goal.target_pose.header.stamp = rospy.Time.now()
             goal.target_pose = msg
             client.send_goal(goal)
+            print('counter:' + str(self.counter))
             wait = client.wait_for_result() # This line blocks until the goal is reached, so interupt may be more difficult.
             #Need to find a way to break out of the loop early
-    
+            self.counter +=1 
             if not wait:
                 rospy.logerr("Action server is not available.")
                 rospy.signal_shutdown("Action server is not available.")
