@@ -8,10 +8,12 @@
 
   <!-- startup navigation -->
   <include file="$(find my_turtlebot3)/launch/my_turtlebot3_navigation.launch">
-    <arg name="map_file" value="$(env HOME)/map/map.yaml"/>
+    <arg name="map_file" value="$(env HOME)/ar_ws/map.yaml"/>
   </include>
   
   <!-- Start control node -->
   <node pkg="sim" type="sim_nav_goals.py" name="sim_nav_goals" output="screen" respawn="true" />
+  
+
 
 </launch>
