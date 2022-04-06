@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-from cmath import cos
-from cmath import sin
-from typing import List
+#from cmath import cos
+#from cmath import sin
+#from typing import List
 import rospy
 import math
 import copy
@@ -16,7 +16,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 class sim_nav_goals():
 
-    waypoints = [[4,4], [3,3], [0,0]] #etc etc (last should be [0,0])
+    waypoints = [[1.5,4.5,1], [3,3,0], [0,0,0]] #etc etc (last should be [0,0])
 
     
     
@@ -26,7 +26,7 @@ class sim_nav_goals():
     
     pose_msg = PoseStamped()
     def setCurrentPose(self, pose): # (self, header, pose)
-        pose_msg = pose
+        self.pose_msg = pose
 
         
     def __init__(self):
@@ -38,7 +38,7 @@ class sim_nav_goals():
         rospy.Subscriber("is_in_sight", Bool, self.callback_is_in_sight)
         rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, self.setCurrentPose) # Check msg formatting, callback params, Get from amcl_pose topic
                 #PoseWithCovarianceStamped > PoseWithCovariance > Pose 
-        alert_pub = rospy.Publisher("Alerts", UInt8, queze_size = 1)
+        alert_pub = rospy.Publisher("Alerts", UInt8)
        
         
         client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
@@ -46,19 +46,23 @@ class sim_nav_goals():
 
         self.begin = 0  # This variable is never used
         rate = rospy.Rate(10)
+
+        wish_return = False
+        first = True
         while not rospy.is_shutdown():
-            if(self.wish_return):
+            # MAIN LOOP ---------------------------------------------------------------------
+            if wish_return:
                 counter = len(self.waypoints)-1
                 
             # Don't do anything is Ron has been spotted
-            if(self.seen):
+            elif self.seen:
                 #set a goal of the current position
                 if not self.stopped:
                     self.stopped = True
                     pose = PoseStamped()
                     pose.pose = self.pose_msg.pose.pose
 
-                rospy.sleep(500)
+                rate.sleep()
                 continue
 
 
@@ -68,17 +72,18 @@ class sim_nav_goals():
             quat = self.pose_msg.pose.pose.orientation
             diff_x = self.waypoints[self.counter][0] - pos.x    # find the different between the waypoint and current position in each axis
             diff_y = self.waypoints[self.counter][1] - pos.y
-            diff_z = sin(self.waypoints[self.counter][2]/2) - quat.z
-            diff_w = cos(self.waypoints[self.counter][2]/2) - quat.w
+            diff_z = math.sin(self.waypoints[self.counter][2]/2) - quat.z
+            diff_w = math.cos(self.waypoints[self.counter][2]/2) - quat.w
             # rotational difference?
             diff_x *= diff_x    # squaring to get the abs squared. This should be computationally cheaper than abs() as no sqrt is needed
             diff_y *= diff_y
             diff_z *= diff_z
             diff_w *= diff_w
-            if diff_x > 0.0001 or diff_y > 0.0001 or diff_z > 0.1 or diff_w > 0.1: # if both pos diffs are less than 0.01 (remember, they are squared above to discard negatives)
-                rospy.sleep(200)                                                   # and both quat diffs are less that ~0.3
+            if (not first) and (diff_x > 0.0001 or diff_y > 0.0001 or diff_z > 0.1 or diff_w > 0.1): # if both pos diffs are less than 0.01 (remember, they are squared above to discard negatives)
+                rate.sleep()                                                        # and both quat diffs are less that ~0.3
                 continue    # we're not at the waypoint yet, don't create a new goal
             print("Reached waypoint")
+            first = False
                        
 
             # Build a new pose from the waypoint information
@@ -88,8 +93,8 @@ class sim_nav_goals():
             if self.counter  < len(self.waypoints):
                 msg.pose.position.x = self.waypoints[self.counter][0]
                 msg.pose.position.y = self.waypoints[self.counter][1]
-                msg.pose.orientation.z = sin(self.waypoints[self.counter][2]/2)
-                msg.pose.orientation.w = cos(self.waypoints[self.counter][2]/2)
+                msg.pose.orientation.z = float(math.sin(self.waypoints[self.counter][2]/2))
+                msg.pose.orientation.w = float(math.cos(self.waypoints[self.counter][2]/2))
             else:
                 rospy.logdebug("Reached end of path!")
                 message = UInt8()
