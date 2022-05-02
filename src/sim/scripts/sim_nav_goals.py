@@ -16,8 +16,8 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 class sim_nav_goals():
 
-    waypoints = [[1.5,4.5,1], [3,3,0], [0,0,0]] #etc etc (last should be [0,0])
-
+    #waypoints = [[-1,2.5,3.14/2],[-3,4,3.14], [-6.25, 2, 3*3.14/2], [-6, 3, 0], [1.5,4.5,1], [5,4.5,0], [6,1,-3.14/2], [-3,1,0]] #etc etc (last should be home pos)
+    waypoints = [[1.5,4.5,1], [5,4,0], [6,2,-3.14/2], [-3,1,0]] 
     
     
     def callback_is_in_sight(self, data):
@@ -45,7 +45,7 @@ class sim_nav_goals():
         client.wait_for_server()
 
         self.begin = 0  # This variable is never used
-        rate = rospy.Rate(10)
+        rate = rospy.Rate(20)
 
         wish_return = False
         first = True
@@ -68,20 +68,21 @@ class sim_nav_goals():
 
             # Check if at waypoint yet
             # Could this have been done easier using a callback triggered by the client?
-            pos = self.pose_msg.pose.pose.position      # fetch the position and orientation from the latest pose message (topic: amcl_pose)
-            quat = self.pose_msg.pose.pose.orientation
-            diff_x = self.waypoints[self.counter][0] - pos.x    # find the different between the waypoint and current position in each axis
-            diff_y = self.waypoints[self.counter][1] - pos.y
-            diff_z = math.sin(self.waypoints[self.counter][2]/2) - quat.z
-            diff_w = math.cos(self.waypoints[self.counter][2]/2) - quat.w
-            # rotational difference?
-            diff_x *= diff_x    # squaring to get the abs squared. This should be computationally cheaper than abs() as no sqrt is needed
-            diff_y *= diff_y
-            diff_z *= diff_z
-            diff_w *= diff_w
-            if (not first) and (diff_x > 0.0001 or diff_y > 0.0001 or diff_z > 0.1 or diff_w > 0.1): # if both pos diffs are less than 0.01 (remember, they are squared above to discard negatives)
-                rate.sleep()                                                        # and both quat diffs are less that ~0.3
-                continue    # we're not at the waypoint yet, don't create a new goal
+            if not first:
+                pos = self.pose_msg.pose.pose.position      # fetch the position and orientation from the latest pose message (topic: amcl_pose)
+                quat = self.pose_msg.pose.pose.orientation
+                diff_x = abs(self.waypoints[self.counter-1][0] - pos.x)    # find the different between the waypoint and current position in each axis
+                diff_y = abs(self.waypoints[self.counter-1][1] - pos.y)
+                diff_z = abs(math.sin(self.waypoints[self.counter-1][2]/2) - quat.z)
+                diff_w = abs(math.cos(self.waypoints[self.counter-1][2]/2) - quat.w)
+                if diff_x > 0.25 or diff_y > 0.25 or diff_z > 3 or diff_w > 3: # if both pos diffs are less than 0.01 (remember, they are squared above to discard negatives)
+                    # print("X: " + str(diff_x) + "\tY: " + str(diff_y) + "\tZ: " + str(diff_z) + "\tW: " + str(diff_w))
+                    #print("Xm: " + str(pos.x) + "  \tXw: " + str(self.waypoints[self.counter-1][0]) + " \tXd: " + str(diff_x))
+                    #print("Ym: " + str(pos.y) + "  \tYw: " + str(self.waypoints[self.counter-1][1]) + " \tYd: " + str(diff_y))
+                    #print("Zm: " + str(quat.z) + "  \tZw: " + str(math.sin(self.waypoints[self.counter-1][2]/2)) + " \tZd: " + str(diff_z))
+                    #print("Wm: " + str(quat.z) + "  \tZw: " + str(math.cos(self.waypoints[self.counter-1][2]/2)) + " \tZd: " + str(diff_w))
+                    rate.sleep()                                                        # and both quat diffs are less that ~0.3
+                    continue    # we're not at the waypoint yet, don't create a new goal
             print("Reached waypoint")
             first = False
                        
