@@ -51,3 +51,8 @@ qtcreator-*
 CATKIN_IGNORE
 
 src/CMakeLists.txt
+
+.goutputstream-RZTGI1
+
+src/sim/scripts/Person_Images/negative/*.jpg
+src/sim/scripts/Person_Images/positive/*.jpg
